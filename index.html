@@ -1,11 +1,10 @@
-<!doctype html>
 <html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="./output.css" rel="stylesheet">
 </head>
-<body class="">
+<body class="h-screen flex flex-col">
     <nav>
         <div class="h-20 items-center bg-gray-200 flex justify-between px-10">
             <h1 class="text-3xl">Todo Lists</h1>
@@ -16,9 +15,21 @@
             </div>
         </div>
     </nav>
-    <div id="mainContent" class="flex px-10">
-        <h1 class="text-4xl">Add List</h1>
-        <button class="bg-red-500 text-white ml-2 px-4 rounded">+</button>
+    <div class="h-0.5 bg-black w-full"></div>
+    
+    <div id="mainContent" class="flex flex-grow px-10">
+        <div class="flex flex-col">
+            <div class="flex items-center">
+                <h1 class="text-4xl mt-2">Add List</h1>
+                <button class="bg-red-500 text-white text-4xl ml-2 mt-2 px-4 pb-1 border-black border-2 rounded">+</button>
+            </div>
+            <div class="mt-4 space-y-2">
+                <span class="block px-4 py-2 bg-gray-200 rounded">List 1</span>
+                <span class="block px-4 py-2 bg-gray-200 rounded">List 2</span>
+                <span class="block px-4 py-2 bg-gray-200 rounded">Lsit 3</span>
+            </div>
+        </div>
+        <div class="w-0.5 bg-black h-full ml-8"></div>
     </div>
     <script src="script.js"></script>
 </body>
