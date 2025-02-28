@@ -21,15 +21,42 @@
         <div class="flex flex-col">
             <div class="flex items-center">
                 <h1 class="text-4xl mt-2">Add List</h1>
-                <button class="bg-red-500 text-white text-4xl ml-2 mt-2 px-4 pb-1 border-black border-2 rounded">+</button>
+                <button class="bg-red-500 hover:bg-red-600 text-white text-4xl ml-2 mt-2 px-4 pb-1 border-black border-2 rounded">+</button>
             </div>
             <div class="mt-4 space-y-2">
-                <span class="block px-4 py-2 bg-gray-200 rounded">List 1</span>
-                <span class="block px-4 py-2 bg-gray-200 rounded">List 2</span>
-                <span class="block px-4 py-2 bg-gray-200 rounded">Lsit 3</span>
+                <span class="block px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded">List 1</span>
+                <span class="block px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded">List 2</span>
+                <span class="block px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded">List 3</span>
             </div>
         </div>
         <div class="w-0.5 bg-black h-full ml-8"></div>
+        <div id="listContent" class="flex flex-col">
+            <h2 class="text-5xl ml-[70px] mt-1.5">List Name</h2>
+            <div id="taskList" class="mt-4 space-y-2 w-screen max-w-2xl">
+                <!-- Task -->
+                <div class="flex items-center justify-between bg-gray-200 hover:bg-gray-300 p-3 rounded ml-[70px]">
+                    <div class="flex items-center">
+                        <input type="checkbox" class="w-5 h-5 mr-3">
+                        <span class="text-lg">Task 1</span>
+                    </div>
+                    <div class="flex space-x-2 ml-2">
+                        <button class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded">Edit</button>
+                        <button class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">Delete</button>
+                    </div>
+                </div>
+                <!-- Task -->
+                <div class="flex items-center justify-between bg-gray-200 hover:bg-gray-300 p-3 rounded ml-[70px]">
+                    <div class="flex items-center">
+                        <input type="checkbox" class="w-5 h-5 mr-3">
+                        <span class="text-lg">Task 2</span>
+                    </div>
+                    <div class="flex space-x-2 ml-2">
+                        <button class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded">Edit</button>
+                        <button class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">Delete</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <script src="script.js"></script>
 </body>
