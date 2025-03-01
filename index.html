@@ -23,13 +23,19 @@
                 <h1 class="text-4xl mt-2">Add List</h1>
                 <button id="addListButton" class="bg-red-500 hover:bg-red-600 text-white text-4xl ml-2 mt-2 px-4 pb-1 border-black border-2 rounded">+</button>
             </div>
-            <div class="mt-4 space-y-2">
+            <div id="listContainer" class="mt-4 space-y-2">
                 <div class="flex px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded items-center justify-between">
                     <span class="w-24 block break-words whitespace-normal">List 1</span>
-                    <button class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded ml-2">Delete List</button>
+                    <button class="deleteListButton bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded ml-2">Delete List</button>
                 </div>
-                <span class="block px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded">List 2</span>
-                <span class="block px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded">List 3</span>
+                <div class="flex px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded items-center justify-between">
+                    <span class="w-24 block break-words whitespace-normal">List 2</span>
+                    <button class="deleteListButton bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded ml-2">Delete List</button>
+                </div>
+                <div class="flex px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded items-center justify-between">
+                    <span class="w-24 block break-words whitespace-normal">List 3</span>
+                    <button class="deleteListButton bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded ml-2">Delete List</button>
+                </div>
             </div>
         </div>
         <div class="w-0.5 bg-black h-full ml-8"></div>
@@ -37,31 +43,53 @@
             <div class="flex items-center">
                 <h2 class="text-5xl ml-[70px] mt-1.5">List Name</h2>
                 <button id="addTaskButton" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded ml-2 mt-4">Add Task</button>
-                <button id="addTaskButton" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded ml-2 mt-4">Clear Completed Tasks</button>
+                <button id="clearTaskButton" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded ml-2 mt-4">Clear Completed Tasks</button>
             </div>
-            <div id="taskList" class="mt-4 space-y-2 w-screen max-w-2xl">
+            <div id="taskContainer" class="mt-4 space-y-2 w-screen max-w-2xl">
                 <!-- Task -->
-                <div class="flex items-center justify-between bg-gray-200 hover:bg-gray-300 p-3 rounded ml-[70px]">
+                <div class="task flex items-center justify-between bg-gray-200 hover:bg-gray-300 p-3 rounded ml-[70px]">
                     <div class="flex items-center">
                         <input type="checkbox" class="w-5 h-5 mr-3">
                         <span class="text-lg">Task 1</span>
                     </div>
                     <div class="flex space-x-2 ml-2">
                         <button class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded">Edit</button>
-                        <button class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">Delete</button>
+                        <button class="deleteTaskButton bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">Delete</button>
                     </div>
                 </div>
                 <!-- Task -->
-                <div class="flex items-center justify-between bg-gray-200 hover:bg-gray-300 p-3 rounded ml-[70px]">
+                <div class="task flex items-center justify-between bg-gray-200 hover:bg-gray-300 p-3 rounded ml-[70px]">
                     <div class="flex items-center">
                         <input type="checkbox" class="w-5 h-5 mr-3">
                         <span class="text-lg">Task 2</span>
                     </div>
                     <div class="flex space-x-2 ml-2">
                         <button class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded">Edit</button>
-                        <button class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">Delete</button>
+                        <button class="deleteTaskButton bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">Delete</button>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+    <!-- ListModal (Hidden by Default) -->
+    <div id="listMakeModal" class="fixed inset-0 bg-gray-900/50 flex items-center justify-center hidden">
+        <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+            <h2 class="text-xl font-bold mb-4">Enter Your List Name</h2>
+            <input id="listNameInput" type="text" placeholder="List name" class="border p-2 w-full mb-4">
+            <div class="flex justify-end">
+                <button id="closeListMakeButton" class="bg-gray-500 text-white px-4 py-2 rounded mr-2">Cancel</button>
+                <button id="submitListNameButton" class="bg-blue-500 text-white px-4 py-2 rounded">Submit</button>
+            </div>
+        </div>
+    </div>
+    <!-- TaskModal (Hidden by Default) -->
+    <div id="taskMakeModal" class="fixed inset-0 bg-gray-900/50 flex items-center justify-center hidden">
+        <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+            <h2 class="text-xl font-bold mb-4">Enter Your Task Name</h2>
+            <input id="taskNameInput" type="text" placeholder="Task name" class="border p-2 w-full mb-4">
+            <div class="flex justify-end">
+                <button id="closeTaskMakeButton" class="bg-gray-500 text-white px-4 py-2 rounded mr-2">Cancel</button>
+                <button id="submitTaskNameButton" class="bg-blue-500 text-white px-4 py-2 rounded">Submit</button>
             </div>
         </div>
     </div>
