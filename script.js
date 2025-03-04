@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", function() {
             }
             let index = listElement.dataset.index;
             activeList = taskLists[index];
-            renderTasks();
+            renderLists();
         }
         else if (event.target.classList.contains("taskCheckBox")) {
             checkTask(event.target);
@@ -65,6 +65,12 @@ document.addEventListener("DOMContentLoaded", function() {
         taskLists.forEach((list, index) => {
             let listElement = document.createElement("div");
             listElement.classList.add("listItem", "flex", "px-4", "py-2", "bg-gray-200", "hover:bg-gray-300", "rounded", "items-center", "justify-between");
+            
+            if (activeList && activeList.id === list.id) {
+                listElement.classList.remove("bg-gray-200", "hover:bg-gray-300");
+                listElement.classList.add("bg-blue-200", "hover:bg-blue-300");
+            }
+
             listElement.setAttribute("draggable", "true");
             listElement.dataset.index = index;
             listElement.dataset.id = list.id;
@@ -113,22 +119,28 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function deleteList(event) {
         let listElement = event.target.parentElement;
-        let index = listElement.dataset.index;
-        let id = listElement.dataset.id;
-        listElement.remove();
-        taskLists.splice(index, 1);
-        if(id === activeList.id) {
-            let newIndex = index - 1;
-            if(newIndex < 0) {
-                newIndex = 0; // Checks if deleted list is the first in the array
+        listElement.classList.add("fade-out");
+        let taskItems = taskContainer.querySelectorAll('.task');
+        taskItems.forEach(task => task.classList.add("fade-out"));
+    
+        setTimeout(() => {
+            listElement.remove();
+            let index = listElement.dataset.index;
+            let id = listElement.dataset.id;
+            taskLists.splice(index, 1);
+            if (id === activeList.id) {
+                let newIndex = index - 1;
+                if (newIndex < 0) {
+                    newIndex = 0; // Checks if deleted list is the first in the array
+                }
+                if (taskLists[newIndex]) {
+                    activeList = taskLists[newIndex];
+                } else {
+                    activeList = undefined;
+                }
             }
-            if(taskLists[newIndex]) {
-                activeList = taskLists[newIndex]
-            } else {
-                activeList = undefined;
-            }
-        }
-        renderLists();
+            renderLists();
+        }, 500);
     }
 
     function updateListTitle() {
@@ -204,10 +216,14 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function deleteTask(element) {
         let taskElement = element.closest(".task");
-        let index = taskElement.dataset.index;
-        taskElement.remove();
-        activeList.tasks.splice(index, 1);
-        renderTasks();
+        taskElement.classList.add("fade-out");
+    
+        setTimeout(() => {
+            taskElement.remove();
+            let index = taskElement.dataset.index;
+            activeList.tasks.splice(index, 1);
+            renderTasks();
+        }, 500);
     }
 
     function checkTask(element) {
@@ -218,8 +234,20 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function clearCheckedTasks() {
-        activeList.tasks = activeList.tasks.filter(task => !task.checked);
-        renderTasks();
+        let taskElements = Array.from(taskContainer.querySelectorAll('.task'));
+        
+        taskElements.forEach(taskElement => {
+            let index = taskElement.dataset.index;
+            if (activeList.tasks[index].checked) {
+                taskElement.classList.add('fade-out');
+            }
+        });
+    
+        setTimeout(() => {
+            // Remove the checked tasks
+            activeList.tasks = activeList.tasks.filter(task => !task.checked);
+            renderTasks();
+        }, 500);
     }
 
     /*---------------------------
