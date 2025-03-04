@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const closeListMakeButton = document.getElementById("closeListMakeButton");
     const submitListNameButton = document.getElementById("submitListNameButton");
     const listNameInput = document.getElementById("listNameInput");
+    const listTitle = document.querySelector("#listContent h2");
 
     const taskContainer = document.getElementById("taskContainer");
     const addTaskButton = document.getElementById("addTaskButton");
@@ -14,12 +15,16 @@ document.addEventListener("DOMContentLoaded", function() {
     const submitTaskNameButton = document.getElementById("submitTaskNameButton");
     const taskNameInput = document.getElementById("taskNameInput");
     const clearTaskButton = document.getElementById("clearTaskButton");
+    const closeTaskEditButton = document.getElementById("closeTaskEditButton")
 
     let taskLists = []; // Stores all lists and their tasks
-    let activeList = null; // The currently selected list    
+    let activeList = null; // The currently selected list
+    let editingTaskIndex = null; // Track the task being edited    
 
+    /*---------------------------
+    Dynamically Added Element Functions
+    ----------------------------*/
     
-
     document.addEventListener("click", function(event) {
         if (event.target.classList.contains("deleteListButton")) {
             deleteList(event);
@@ -41,7 +46,34 @@ document.addEventListener("DOMContentLoaded", function() {
         else if (event.target.classList.contains("taskCheckBox")) {
             checkTask(event.target);
         }
+        else if (event.target.classList.contains("deleteTaskButton")) {
+            deleteTask(event.target);
+        }
+        else if (event.target.classList.contains("editTaskButton")) {
+            let taskElement = event.target.closest(".task");
+                editingTaskIndex = taskElement.dataset.index;
+                taskNameInput.value = activeList.tasks[editingTaskIndex].name;
+                taskMakeModal.querySelector("h2").textContent = "Edit Your Task Name";
+                taskMakeModal.classList.remove("hidden");
+        }
     });
+
+    /*---------------------------
+    List Functions
+    ----------------------------*/
+
+    function renderLists() {
+        listContainer.innerHTML = "";
+        updateListTitle();
+        taskLists.forEach((list, index) => {
+            let listElement = `<div data-index="${index}" data-id="${list.id}" class="listItem flex px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded items-center justify-between">
+                        <span class="listItemName w-24 block break-words whitespace-normal">${list.name}</span>
+                        <button class="deleteListButton bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded ml-2">Delete List</button>
+                    </div>`;
+            listContainer.insertAdjacentHTML("beforeend", listElement);
+        });
+        renderTasks();
+    }
 
     addListButton.addEventListener("click", function() {
         listMakeModal.classList.remove("hidden");
@@ -61,52 +93,6 @@ document.addEventListener("DOMContentLoaded", function() {
             alert("Please enter a name!");
         }
     });
-
-    submitTaskNameButton.addEventListener("click", function () {
-        const name = taskNameInput.value.trim();
-        if (name) {
-            taskNameInput.value = "";
-            taskMakeModal.classList.add("hidden");
-            addTask(name);
-        } else {
-            alert("Please enter a name!");
-        }
-    });
-
-    addTaskButton.addEventListener("click", function() {
-        taskMakeModal.classList.remove("hidden");
-    });
-
-    closeTaskMakeButton.addEventListener("click", function () {
-        taskMakeModal.classList.add("hidden");
-    });
-
-    clearTaskButton.addEventListener("click", function() {
-        clearCheckedTasks();
-    });
-    
-    document.addEventListener("click", function(event) {
-        if (event.target.classList.contains("deleteTaskButton")) {
-            deleteTask(event.target);
-        }
-    });
-
-
-
-    /*---------------------------
-    List Functions
-    ----------------------------*/
-
-    function renderLists() {
-        listContainer.innerHTML = "";
-        taskLists.forEach((list, index) => {
-            let listElement = `<div data-index="${index}" data-id="${list.id}" class="listItem flex px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded items-center justify-between">
-                        <span class="listItemName w-24 block break-words whitespace-normal">${list.name}</span>
-                        <button class="deleteListButton bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded ml-2">Delete List</button>
-                    </div>`;
-            listContainer.insertAdjacentHTML("beforeend", listElement);
-        });
-    }
 
     function addList(name) {
         let newList = {
@@ -131,8 +117,8 @@ document.addEventListener("DOMContentLoaded", function() {
         renderLists();
     }
 
-    function setActiveList() {
-
+    function updateListTitle() {
+        listTitle.textContent = activeList ? activeList.name : "List Name"; // Default if no list
     }
 
     /*---------------------------
@@ -141,6 +127,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function renderTasks() {
         taskContainer.innerHTML = "";
+        updateListTitle();
         activeList.tasks.forEach((task, index) => {
             let isChecked = "";
             if(task.checked) {
@@ -160,6 +147,42 @@ document.addEventListener("DOMContentLoaded", function() {
             taskContainer.insertAdjacentHTML("beforeend", taskElement);
         });
     }
+
+    addTaskButton.addEventListener("click", function() {
+        taskMakeModal.classList.remove("hidden");
+    });
+
+    closeTaskMakeButton.addEventListener("click", function () {
+        taskMakeModal.classList.add("hidden");
+    });
+
+    clearTaskButton.addEventListener("click", function() {
+        clearCheckedTasks();
+    });
+
+    submitTaskNameButton.addEventListener("click", function () {
+        const name = taskNameInput.value.trim();
+        if (!name) {
+            alert("Please enter a name!");
+            return;
+        }
+    
+        if (editingTaskIndex !== null) {
+            activeList.tasks[editingTaskIndex].name = name;
+            editingTaskIndex = null;
+        } else {
+            activeList.tasks.push({ name: name, checked: false });
+        }
+    
+        taskNameInput.value = "";
+        taskMakeModal.classList.add("hidden");
+        taskMakeModal.querySelector("h2").textContent = "Enter Your Task Name";
+        renderTasks();
+    });
+
+    closeTaskEditButton.addEventListener("click", function() {
+        taskEditModal.classList.add("hidden");
+    });
 
     function addTask(name) {
         let newTask = {
@@ -185,18 +208,8 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function clearCheckedTasks() {
-        let checkedTasks = taskContainer.querySelectorAll('input[type="checkbox"]:checked');
-        checkedTasks.forEach(function(checkbox) {
-            deleteTask(checkbox);
-        });
+        activeList.tasks = activeList.tasks.filter(task => !task.checked);
+        renderTasks();
     }
-
-    function editTask() {
-
-    }
-
-    editTaskButton.addEventListener("click", function() {
-
-    });
 
 });
