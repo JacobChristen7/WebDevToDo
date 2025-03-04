@@ -40,9 +40,6 @@ document.addEventListener("DOMContentLoaded", function() {
             activeList = taskLists[index];
             renderTasks();
         }
-        else if (event.target.id === "addTaskButton") {
-            taskMakeModal.classList.remove("hidden");
-        }
         else if (event.target.classList.contains("taskCheckBox")) {
             checkTask(event.target);
         }
@@ -183,15 +180,6 @@ document.addEventListener("DOMContentLoaded", function() {
     closeTaskEditButton.addEventListener("click", function() {
         taskEditModal.classList.add("hidden");
     });
-
-    function addTask(name) {
-        let newTask = {
-            name: name,
-            checked: false
-        };
-        activeList.tasks.push(newTask);
-        renderTasks();
-    }
 
     function deleteTask(element) {
         let taskElement = element.closest(".task");
