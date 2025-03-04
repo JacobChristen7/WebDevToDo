@@ -212,12 +212,14 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function saveData() {
         localStorage.setItem("lists", JSON.stringify(taskLists));
-        localStorage.setItem("activeList", JSON.stringify(activeList));
+        localStorage.setItem("activeListID", JSON.stringify(activeList.id));
+        alert("data saved!")
     }
 
     function loadData() {
         taskLists = JSON.parse(localStorage.getItem("lists"));
-        activeList = JSON.parse(localStorage.getItem("activeList"));
+        activeListID = JSON.parse(localStorage.getItem("activeListID"));
+        activeList = taskLists.find(list => list.id === activeListID);
         renderLists();
     }
 
