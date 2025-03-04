@@ -15,11 +15,10 @@ document.addEventListener("DOMContentLoaded", function() {
     const submitTaskNameButton = document.getElementById("submitTaskNameButton");
     const taskNameInput = document.getElementById("taskNameInput");
     const clearTaskButton = document.getElementById("clearTaskButton");
-    const closeTaskEditButton = document.getElementById("closeTaskEditButton")
 
     let taskLists = []; // Stores all lists and their tasks
     let activeList = null; // The currently selected list
-    let editingTaskIndex = null; // Track the task being edited    
+    let editingTaskIndex = null; // Track the task being edited
 
     /*---------------------------
     Dynamically Added Element Functions
@@ -109,7 +108,15 @@ document.addEventListener("DOMContentLoaded", function() {
         listElement.remove();
         taskLists.splice(index, 1);
         if(id === activeList.id) {
-            activeList = taskLists[index - 1]
+            let newIndex = index - 1;
+            if(newIndex < 0) {
+                newIndex = 0; // Checks if deleted list is the first in the array
+            }
+            if(taskLists[newIndex]) {
+                activeList = taskLists[newIndex]
+            } else {
+                activeList = undefined;
+            }
         }
         renderLists();
     }
@@ -125,24 +132,27 @@ document.addEventListener("DOMContentLoaded", function() {
     function renderTasks() {
         taskContainer.innerHTML = "";
         updateListTitle();
-        activeList.tasks.forEach((task, index) => {
-            let isChecked = "";
-            if(task.checked) {
-                isChecked = "checked";
-            }
-            let taskElement = `<!-- Task -->
-                    <div data-index="${index}" class="task flex items-center justify-between bg-gray-200 hover:bg-gray-300 p-3 rounded ml-[70px]">
-                        <div class="flex items-center">
-                            <input type="checkbox" ${isChecked} class="taskCheckBox w-5 h-5 mr-3">
-                            <span class="taskName text-lg">${task.name}</span>
-                        </div>
-                        <div class="flex space-x-2 ml-2">
-                            <button class="editTaskButton bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded">Edit</button>
-                            <button class="deleteTaskButton bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">Delete</button>
-                        </div>
-                    </div>`;
-            taskContainer.insertAdjacentHTML("beforeend", taskElement);
-        });
+        if(activeList && activeList.tasks) {        
+            activeList.tasks.forEach((task, index) => {
+                let isChecked = "";
+                if(task.checked) {
+                    isChecked = "checked";
+                }
+                let taskElement = `<!-- Task -->
+                        <div data-index="${index}" class="task flex items-center justify-between bg-gray-200 hover:bg-gray-300 p-3 rounded ml-[70px]">
+                            <div class="flex items-center">
+                                <input type="checkbox" ${isChecked} class="taskCheckBox w-5 h-5 mr-3">
+                                <span class="taskName text-lg">${task.name}</span>
+                            </div>
+                            <div class="flex space-x-2 ml-2">
+                                <button class="editTaskButton bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded">Edit</button>
+                                <button class="deleteTaskButton bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">Delete</button>
+                            </div>
+                        </div>`;
+                taskContainer.insertAdjacentHTML("beforeend", taskElement);
+            });
+        }
+        saveData();
     }
 
     addTaskButton.addEventListener("click", function() {
@@ -177,10 +187,6 @@ document.addEventListener("DOMContentLoaded", function() {
         renderTasks();
     });
 
-    closeTaskEditButton.addEventListener("click", function() {
-        taskEditModal.classList.add("hidden");
-    });
-
     function deleteTask(element) {
         let taskElement = element.closest(".task");
         let index = taskElement.dataset.index;
@@ -200,4 +206,20 @@ document.addEventListener("DOMContentLoaded", function() {
         renderTasks();
     }
 
+    /*---------------------------
+    Data Functions
+    ----------------------------*/
+
+    function saveData() {
+        localStorage.setItem("lists", JSON.stringify(taskLists));
+        localStorage.setItem("activeList", JSON.stringify(activeList));
+    }
+
+    function loadData() {
+        taskLists = JSON.parse(localStorage.getItem("lists"));
+        activeList = JSON.parse(localStorage.getItem("activeList"));
+        renderLists();
+    }
+
+    loadData(); // Loads the user data from local storage
 });
