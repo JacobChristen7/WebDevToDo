@@ -214,6 +214,7 @@ document.addEventListener("DOMContentLoaded", function() {
         let taskElement = element.closest(".task");
         let index = taskElement.dataset.index;
         activeList.tasks[index].checked = element.checked;
+        saveData();
     }
 
     function clearCheckedTasks() {
