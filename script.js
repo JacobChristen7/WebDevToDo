@@ -213,7 +213,6 @@ document.addEventListener("DOMContentLoaded", function() {
     function saveData() {
         localStorage.setItem("lists", JSON.stringify(taskLists));
         localStorage.setItem("activeListID", JSON.stringify(activeList.id));
-        alert("data saved!")
     }
 
     function loadData() {
