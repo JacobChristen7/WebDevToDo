@@ -19,6 +19,7 @@ document.addEventListener("DOMContentLoaded", function() {
     let taskLists = []; // Stores all lists and their tasks
     let activeList = null; // The currently selected list
     let editingTaskIndex = null; // Track the task being edited
+    let draggedItem = null;
 
     /*---------------------------
     Dynamically Added Element Functions
@@ -62,11 +63,20 @@ document.addEventListener("DOMContentLoaded", function() {
         listContainer.innerHTML = "";
         updateListTitle();
         taskLists.forEach((list, index) => {
-            let listElement = `<div data-index="${index}" data-id="${list.id}" class="listItem flex px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded items-center justify-between">
-                        <span class="listItemName w-24 block break-words whitespace-normal">${list.name}</span>
-                        <button class="deleteListButton bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded ml-2">Delete List</button>
-                    </div>`;
-            listContainer.insertAdjacentHTML("beforeend", listElement);
+            let listElement = document.createElement("div");
+            listElement.classList.add("listItem", "flex", "px-4", "py-2", "bg-gray-200", "hover:bg-gray-300", "rounded", "items-center", "justify-between");
+            listElement.setAttribute("draggable", "true");
+            listElement.dataset.index = index;
+            listElement.dataset.id = list.id;
+            listElement.innerHTML = `
+                <span class="listItemName w-24 block break-words whitespace-normal">${list.name}</span>
+                <button class="deleteListButton bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded ml-2">Delete List</button>`;
+
+            listElement.addEventListener("dragstart", listDragStart);
+            listElement.addEventListener("dragover", listDragOver);
+            listElement.addEventListener("drop", listDrop);
+
+            listContainer.appendChild(listElement);
         });
         renderTasks();
     }
@@ -134,22 +144,27 @@ document.addEventListener("DOMContentLoaded", function() {
         updateListTitle();
         if(activeList && activeList.tasks) {        
             activeList.tasks.forEach((task, index) => {
-                let isChecked = "";
-                if(task.checked) {
-                    isChecked = "checked";
-                }
-                let taskElement = `<!-- Task -->
-                        <div data-index="${index}" class="task flex items-center justify-between bg-gray-200 hover:bg-gray-300 p-3 rounded ml-[70px]">
-                            <div class="flex items-center">
-                                <input type="checkbox" ${isChecked} class="taskCheckBox w-5 h-5 mr-3">
-                                <span class="taskName text-lg">${task.name}</span>
-                            </div>
-                            <div class="flex space-x-2 ml-2">
-                                <button class="editTaskButton bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded">Edit</button>
-                                <button class="deleteTaskButton bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">Delete</button>
-                            </div>
-                        </div>`;
-                taskContainer.insertAdjacentHTML("beforeend", taskElement);
+                let taskElement = document.createElement("div");
+                taskElement.classList.add("task", "flex", "items-center", "justify-between", "bg-gray-200", "hover:bg-gray-300", "p-3", "rounded", "ml-[70px]");
+                taskElement.setAttribute("draggable", "true");
+                taskElement.dataset.index = index;
+    
+                taskElement.innerHTML = `
+                    <div class="flex items-center">
+                        <input type="checkbox" ${task.checked ? "checked" : ""} class="taskCheckBox w-5 h-5 mr-3">
+                        <span class="taskName text-lg">${task.name}</span>
+                    </div>
+                    <div class="flex space-x-2 ml-2">
+                        <button class="editTaskButton bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded">Edit</button>
+                        <button class="deleteTaskButton bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">Delete</button>
+                    </div>
+                `;
+    
+                taskElement.addEventListener("dragstart", taskDragStart);
+                taskElement.addEventListener("dragover", taskDragOver);
+                taskElement.addEventListener("drop", taskDrop);
+    
+                taskContainer.appendChild(taskElement);
             });
         }
         saveData();
@@ -204,6 +219,56 @@ document.addEventListener("DOMContentLoaded", function() {
     function clearCheckedTasks() {
         activeList.tasks = activeList.tasks.filter(task => !task.checked);
         renderTasks();
+    }
+
+    /*---------------------------
+    Reorder Functions
+    ----------------------------*/
+
+    function listDragStart(event) {
+        draggedItem = event.target;
+        event.dataTransfer.setData("text/plain", event.target.dataset.index);
+    }
+    
+    function listDragOver(event) {
+        event.preventDefault(); // Required to allow dropping
+    }
+    
+    function listDrop(event) {
+        event.preventDefault();
+        let draggedIndex = event.dataTransfer.getData("text/plain");
+        let targetIndex = event.target.closest(".listItem").dataset.index;
+    
+        if (draggedIndex !== targetIndex) {
+            let dragList = taskLists[draggedIndex];
+            taskLists.splice(draggedIndex, 1);
+            taskLists.splice(targetIndex, 0, dragList);
+            renderLists();
+            saveData();
+        }
+    }
+
+    function taskDragStart(event) {
+        draggedItem = event.target;
+        event.dataTransfer.setData("text/plain", event.target.dataset.index);
+    }
+    
+    function taskDragOver(event) {
+        event.preventDefault();
+    }
+    
+    function taskDrop(event) {
+        event.preventDefault();
+        let draggedIndex = event.dataTransfer.getData("text/plain");
+        let targetIndex = event.target.closest(".task").dataset.index;
+    
+        if (draggedIndex !== targetIndex) {
+            let temp = activeList.tasks[draggedIndex];
+            activeList.tasks.splice(draggedIndex, 1);
+            activeList.tasks.splice(targetIndex, 0, temp);
+            renderTasks();
+            saveData();
+        }
     }
 
     /*---------------------------
